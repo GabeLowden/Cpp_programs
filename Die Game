@@ -1,0 +1,52 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std;
+
+
+//die game
+int main()
+{
+    //initilize vars
+    int die1Roll;
+    int die2Roll;
+    int total;
+
+    //generates seed using srand() and computer system's time
+    srand(time(0));
+
+    //assign vars
+    total = 0;
+
+    //game loop for roll again conditions
+    while ((total != 2) && (total != 3) && (total != 5) && (total != 7) && (total != 9) && (total != 11)) {
+        //roll dice
+        die1Roll = rand() % 6 + 1;
+        die2Roll = rand() % 6 + 1;
+
+        //calculate total
+        total += die1Roll + die2Roll;
+
+        //display to screen the rolls + total
+        cout << "\nDie 1: " << die1Roll;
+        cout << "\tDie 2: " << die2Roll;
+        cout << "\tTotal: " << total << endl;
+
+        //break and display win to screen (winning conditions)
+        if ((total == 7) || (total == 9) || (total == 11)) {
+            cout << "You're a WINNER!" << endl << "Game over." << endl;
+            break;
+        }
+        //break and display lost to screen (losing conditions)
+        else if ((total == 2) || (total == 3) || (total == 5)) {
+            cout << "You LOST!!" << "Game over." << endl;
+            break;
+        }
+        //continue loop, roll again, set total back to zero
+        else {
+            cout << "Let's roll again..." << endl;
+            total = 0;
+        }
+
+    }
+    return 0;
+}
