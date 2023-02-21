@@ -1,0 +1,148 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+#include <cstdlib>
+#include <math.h>
+
+using namespace std;
+
+//global constant
+const double PI = atan(1.0) * 4.0;
+const double PRECISION = 0.00001;
+const int COLUMN_WIDTH = 15;
+
+//This function converts an angle to radians
+double degreesToRadians(double angle_in_degrees) {
+  //var initlization
+  double Radians;
+  //loop for angles less than 0, so they're 0-2PI
+  while (angle_in_degrees < 0) {
+    angle_in_degrees += 360;
+    }
+  //loop for angle > 360, so they're 0-2PI
+  while (angle_in_degrees > 360) {
+    angle_in_degrees -= 360;
+  }
+  //Calculate the radian value for the parameter value
+  Radians = angle_in_degrees * (PI / 180);
+  return Radians;
+}
+
+//calculates the factorial of a number
+double factorial(double factorial) {
+  if (factorial < 0) {
+    return 1.0;
+  }
+  //not neccessary
+  //else if (factorial==0) {
+  // return 1.0;
+  //}
+  else if (factorial < 1) {
+    return 1.0;
+  }
+  else {
+    int i = factorial;
+    double factorialAnswer = 1.0;
+    for (int j = 1; j <= i; ++j) {
+      factorialAnswer *= j;
+    }
+  return factorialAnswer;
+  }
+}
+
+
+//Sine(x) = x – x3/3! + x5/5! – x7/7! + x9/9! – x11/11! + ..
+double mySine(double angle_in_radians) {
+  double prevVal = 1.0;
+  double curVal = 0.0;
+  int i;
+  int y = 0;
+  for (i = 1; abs(prevVal - curVal) > PRECISION; i = i + 2) {
+    prevVal = curVal;
+    //for odd power case
+    if (y % 2 != 0) {
+      curVal = curVal - (pow(angle_in_radians, i)) / factorial(static_cast<double>(i));
+    }
+    //for even power case
+    else{
+      curVal = curVal + (pow(angle_in_radians, i)) / factorial(static_cast<double>(i));
+    }
+    y = y + 1;
+  }
+
+  return curVal;
+}
+
+double myCosine(double angle_in_radians) {
+  double prevVal = 1.0;
+  double curVal = 0.0;
+  int i;
+  int y = 0;
+  for (i = 0; abs(prevVal - curVal) > PRECISION; i = i + 2) {
+    prevVal = curVal;
+    //for odd power case
+    if (y % 2 != 0) {
+      curVal = curVal - (pow(angle_in_radians, i)) / factorial(static_cast<double>(i));
+    }
+    //for even power case
+    else {
+      curVal = curVal + (pow(angle_in_radians, i)) / factorial(static_cast<double>(i));
+    }
+    y = y + 1;
+  }
+
+  return curVal;
+}
+
+bool myThreeTaylor(double angle_in_radians, double& sine, double& cosine, double& tan) {
+  sine = mySine(angle_in_radians);
+  cosine = myCosine(angle_in_radians);
+  if ((fabs(cosine) < PRECISION) && (sine >= 0.0)) {
+    tan = INFINITY;
+    return false;
+    }
+  else if ((fabs(cosine) < PRECISION) && (sine < 0.0)) {
+    tan = -INFINITY;
+    return false;
+  }
+  else {
+    tan = sine / cosine;
+    return true;
+  }
+}
+
+int main(){
+  //create a table that displays the taylor series from a loop that steps by 15 degrees.
+  //-60-480 degrees
+  //labels for each column
+  cout << setw(COLUMN_WIDTH) << "Degrees"
+       << setw(COLUMN_WIDTH) << "Radian(x)"
+       << setw(COLUMN_WIDTH) << "Sin(x)"
+       << setw(COLUMN_WIDTH) << "Cosin(x)"
+       << setw(COLUMN_WIDTH) << "Tangent(x)"
+       << endl;
+
+  //loop through every angle in desired range
+  int degrees;
+  for (degrees = -60; degrees < 526; degrees += 15){
+    //calculate each value for current angle
+    double temp_radians;
+    double sine;
+    double cosine;
+    double tan;
+    bool Tangent;
+
+    //call to functions
+    temp_radians = degreesToRadians(static_cast<double>(degrees));
+    myThreeTaylor(temp_radians,sine,cosine,tan);
+
+    //output values for trig
+    cout << setw(COLUMN_WIDTH) << degrees
+         << setw(COLUMN_WIDTH) << fixed << setprecision(4) << temp_radians
+         << setw(COLUMN_WIDTH) << fixed << setprecision(4) << sine
+         << setw(COLUMN_WIDTH) << fixed << setprecision(4) << cosine
+         << setw(COLUMN_WIDTH) << fixed << setprecision(4) << tan
+         << endl;
+  }
+  return 0;
+}
