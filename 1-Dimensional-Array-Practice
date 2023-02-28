@@ -1,0 +1,267 @@
+Description: This program was made to practice, with functions and 1 dimensional arrays.
+CODE START
+------------------------------------------------
+//9 functions inside stats.cpp
+//arrSum
+//arrMean
+//arrMin
+//arrMax
+//arrStdDev
+//arrNumPrimes
+//arrSetSize
+//arrNumCount
+//arrReverse
+#include <iostream>
+#include <cmath>
+#include <array>
+
+using namespace std;
+
+
+//func that return sum
+int arrSum(int array[], unsigned int length){
+  int sum = 0;
+  //loops through each subscript of array passed through parameter, and adds up the sum of each value
+  for (unsigned int i = 0; i < length; ++i){
+    sum += array[i];
+  }
+  return sum;
+}
+
+//arrMean
+//returns the mean of the values in the array passed
+double arrMean(int array[],unsigned int length){
+  double mean = 0.0;
+  double sum = 0.0;
+  //calls function arrSum, then divides the sum by total elements in the array
+  sum = arrSum(array, length);
+  mean = sum / static_cast<double>(length);
+  return mean;
+}
+
+//arrMin
+//returns the smallest value in the array passed
+int arrMin(int array[],unsigned int length){
+  int min = array[0];
+  //loops through the array passed,
+  //and has a condition to evaluate if the current value is less than min
+  for (unsigned int i = 0; i < length; ++i){
+    if (array[i] < min){
+      min = array[i];
+    }
+    else{
+      continue;
+    }
+  }
+  return min;
+}
+
+//arrMax
+//returns the largest value in the passed array
+int arrMax(int array[], unsigned int length) {
+  int max = 0;
+  //loops through the array passed,
+  //and has a condition to evaluate if current value is greater than max
+  for (unsigned int i = 0; i < length; ++i) {
+    if (array[i] > max) {
+      max = array[i];
+    }
+    else{
+      continue;
+    }
+  }
+  return max;
+}
+
+//arrStdDev
+//returns the population standard deviation
+double arrStdDev(int array[], unsigned int length) {
+  double mean;
+  double stdDev;
+  double xValMinusMean;
+  xValMinusMean = 0.0;
+  //calls mean function
+  mean = arrMean(array,length);
+  //loops through each value and calculates the current value minus the mean
+  for (unsigned int i = 0; i < length; ++i){
+    xValMinusMean += pow((array[i] - mean), 2);
+  }
+  stdDev = pow((xValMinusMean / static_cast<double>(length)),0.5);
+  return stdDev;
+}
+
+//detects prime numbers
+//determines if the number passed is a prime number
+//returns true for prime numbers, false for non prime numbers
+bool isPrime(int number) {
+  if (number <= 1){return false;}
+  if (number == 2){return true;}
+  for (int i = 2; i < sqrt(number) + 1; ++i){
+    if (number % i == 0) {return false;}
+  }
+  return true;
+}
+//arrNumPrimes
+//returns the number of prime numbers in the passed array
+unsigned int arrNumPrimes(int array[], unsigned int length) {
+  int total;
+  int num;
+  total = 0;
+  //loops to determine if the current value in array is prime
+  //increments total if the number is prime
+  for (unsigned int i = 0;i < length; ++i) {
+    num = array[i];
+    if (isPrime(num)) {
+      total += 1;
+    }
+    else {continue;}
+    }
+  return total;
+}
+
+//arrSetSize
+//returns the size of the array no counting duplicate values
+unsigned arrSetSize(int array[], unsigned length) {
+  //special is the total unique numbers in array
+  unsigned special;
+  special = 0;
+  int newList[length];
+  bool duplicate;
+  //loops through each value
+  for (unsigned i = 0; i < length; ++i) {
+    //default value of bool is set to false, so my default the number is assumed not a duplicate
+    duplicate = false;
+    //compares the current value to everyother value in array to test if it is unique
+    for (unsigned k = 0; k < special; ++k) {
+      if (array[i] == newList[k]) {
+        //bool set to true if duplicate is detected
+        duplicate = true;
+        break;
+      }
+    }
+    //if the current value is not a duplicate, special is incremented
+    if (!duplicate){
+      newList[special] = array[i];
+      special++;
+    }
+  }
+  return special;
+}
+
+//arrNumCount
+//returns the number of times a passed value occurs inside the array
+unsigned arrNumCount(int array[], unsigned length, int value) {
+  //occurance = the times the value occurs
+  int occurance = 0;
+  //loop through array and check current value to passed value
+  for (unsigned i = 0; i< length; ++i) {
+    if (value == array[i]) {
+      //increments if current value is = passed value
+      occurance++;
+    }
+  }
+  return occurance;
+}
+//arrReverse
+//returns nothing
+//the array passed is reversed
+void arrReverse(int array[], unsigned length) {
+  for(unsigned i = 0; i < length / 2; ++i) {
+    int temp = array[i];
+    array[i] = array[length - i - 1];
+    array[length - i - 1] = temp;
+  }
+}
+
+int main()
+{
+    //test arrSum
+    int testing[10] = {0,1,2,3,4,5,6,7,8,9};
+    cout << "Testing arrSum, expect 45, actual: " << arrSum(testing, 10) << endl;
+
+    //test arrMean
+    cout << "Testing arrMean, expect 4.5, actual: " << arrMean(testing, 10) << endl;
+
+    //test arrMin
+    int testing_two[10] = {3,45,67,78,89,4,23,27,15,76};
+    int testing_three[5] = {9,89,43,45,74};
+    cout << "Testing arrMin, expect 0, actual: " << arrMin(testing, 10) << endl;
+    cout << "Testing arrMin, expect 3, actual: " << arrMin(testing_two, 10) << endl;
+    cout << "Testing arrMin, expect 9, actual: " << arrMin(testing_three, 5) << endl;
+
+    //test arrMax
+    cout << "Testing arrMax, expect 9, actual: " << arrMin(testing, 10) << endl;
+    cout << "Testing arrMax, expect 89, actual: " << arrMax(testing_two, 10) << endl;
+    cout << "Testing arrMax, expect 89, actual: " << arrMax(testing_three, 5) << endl;
+
+    //test arrStdDev
+    cout << "Testing arrStdDev, expect 2.87228, actual: " << arrStdDev(testing, 10) << endl;
+    cout << "Testing arrStdDev, expect 30.9356, actual: " << arrStdDev(testing_two, 10) << endl;
+    cout << "Testing arrStdDev, expect 27.6839, actual: " << arrStdDev(testing_three, 5) << endl;
+
+    //test arrNumPrimes
+    cout << "Testing arrNumPrimes, expect 4, actual: " << arrNumPrimes(testing, 10) << endl;
+    cout << "Testing arrNumPrimes, expect 4, actual: " << arrNumPrimes(testing_two, 10) << endl;
+    cout << "Testing arrNumPrimes, expect 3, actual: " << arrNumPrimes(testing_three, 10) << endl;
+
+    //test arrSetSize
+    cout << "Testing arrSetSize, expect 10, actual: " << arrSetSize(testing, 10) << endl;
+    cout << "Testing arrSetSize, expect 10, actual: " << arrSetSize(testing_two, 10) << endl;
+    cout << "Testing arrSetSize, expect 5, actual: " << arrSetSize(testing_three, 5) << endl;
+
+    //test arrNumCount
+    cout << "Testing arrNumCount, expect 0, actual: " << arrNumCount(testing, 10, -4) << endl;
+    cout << "Testing arrNumCount, expect 1, actual: " << arrNumCount(testing, 10, 9) << endl;
+    cout << "Testing arrNumCount, expect 1, actual: " << arrNumCount(testing, 10, 3) << endl;
+
+    //test arrReverse
+    cout << "Testing arrReverse, original arrays: " << endl;
+    for (int i = 0; i < 10; ++i) {
+      if (i < 9) {
+        cout << testing[i] << ",";
+      }
+      else {cout << testing[i];}
+    }
+    cout << endl;
+    for (int k = 0; k < 10; ++k) {
+      if (k < 9) {
+        cout << testing_two[k] << ",";
+      }
+      else {cout << testing_two[k];}
+    }
+    cout << endl;
+    for (int j = 0; j < 5; ++j) {
+      if (j < 4) {
+        cout << testing_three[j] << ",";
+      }
+      else {cout << testing_three[j];}
+    }
+    cout << endl;
+    arrReverse(testing, 10);
+    arrReverse(testing_two, 10);
+    arrReverse(testing_three, 5);
+    cout << "Arrays after arrReverse function called: " << endl;
+    for (int i = 0; i < 10; ++i) {
+      if (i < 9) {
+        cout << testing[i] << ",";
+      }
+      else {cout << testing[i];}
+    }
+    cout << endl;
+    for (int k = 0; k < 10; ++k) {
+      if (k < 9) {
+        cout << testing_two[k] << ",";
+      }
+      else {cout << testing_two[k];}
+    }
+    cout << endl;
+    for (int j = 0; j < 5; ++j) {
+      if (j < 4) {
+        cout << testing_three[j] << ",";
+      }
+      else {cout << testing_three[j];}
+    }
+    cout << endl;
+
+    return 0;
+}
