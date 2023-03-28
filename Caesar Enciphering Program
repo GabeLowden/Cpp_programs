@@ -1,0 +1,192 @@
+#include <iostream>
+#include <string>
+#include <cctype>
+#include <algorithm>
+#include <cmath>
+#include <iomanip>
+#include <fstream>
+#include <ctype.h>
+#include <stdio.h>
+#include <cstdio>
+#include <cstring>
+#include <string.h>
+#include <fstream>
+
+using namespace std;
+
+char encodeChar(char in_char, string codeWord, int rCount);
+string codeWordGen (string cipher_key);
+
+//The following function is used to encode a char by shifting RIGHT (shift positive) as a parameter
+//lower case must be converted to upper case for shifting and then convert back to lower case
+char rotateChar (char in_char, int shift){
+    if (!isalpha (in_char)) return in_char;
+
+    //convert in_char to upper case if necessary
+    bool lower_flag = false;
+    if (islower (in_char)) {
+        in_char = toupper (in_char);
+        lower_flag = true;
+    }
+
+    //perform right shift; use %26 to do wrapping around
+    in_char = in_char + shift;
+    while (in_char > 'Z'){
+       in_char = 'A' + (in_char - 'A') % 26;
+       // in_char = in_char - 'Z' + 'A' - 1; (either this one or above will work)
+    }
+
+    //convert the upper case to lower case if necessary
+    if (lower_flag)
+        in_char = tolower (in_char);
+
+    return in_char;
+}
+
+//Given a line of string and cipher_key, encipher the string to another string NOT readable
+string caesarString (string caesar_string, string cipher_key){
+    if (caesar_string.length() == 0) return caesar_string;
+
+    int index = 0;
+    for (unsigned int i = 0; i < caesar_string.length(); ++i){
+
+        if (isalpha(caesar_string[i])){
+            caesar_string [i] = encodeChar(caesar_string[i], cipher_key, index);
+            index++;
+        }
+        else {}
+    }
+    //cout << "Return from caserString \n";
+    return caesar_string;
+}
+
+int encrypt (string in_file, string out_file, string cipher_key){
+    ifstream inputFile;
+    ofstream outputFile;
+    string inputString;
+    int lines = 0;
+
+    inputFile.open(in_file.c_str());
+    outputFile.open(out_file.c_str());
+
+    if (!inputFile) {
+        cout << "input file cannot be opened \n";
+        return -1;
+    }
+
+    if (!outputFile){
+        cout << "output file cannot be opened \n";
+        return -1;
+    }
+    //cout << "Get into while loop of Encrypt" << endl;
+
+    string codeWord = codeWordGen(cipher_key);
+    //Read a line from the input file, call CaesarString to encipher the line of string
+    while (getline(inputFile, inputString)){
+        outputFile << caesarString(inputString, codeWord) << endl;
+        //count lines in inputFile
+        lines++;
+        //cout << "Test at encrypt while loop " << inputString << endl;
+    }
+    //close files
+    inputFile.close();
+    outputFile.close();
+
+    return lines;
+}
+
+string codeWordGen (string cipher_key) {
+    int sum = 0;
+    int numShifts;
+    string codeWord = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    int numSwaps;
+    int indx1;
+    int indx2;
+    char Temp;
+    for (unsigned int i = 0; i < cipher_key.size(); ++i){
+        if (isalnum(cipher_key[i])){
+
+        }
+        else{
+            return "";
+            //FIXME break
+        }
+        sum = sum + cipher_key[i];
+    }
+    numShifts = (sum % 23) + 3;
+
+    for (unsigned int i = 0; i < codeWord.size(); ++i){
+        codeWord.at(i) = rotateChar(codeWord.at(i), numShifts);
+    }
+
+    numSwaps = (numShifts % 9) + 2;
+    srand(numShifts);
+
+    for (int k = 0; k < numSwaps; ++k){
+
+        indx1 = rand() % 26;
+        indx2 = rand() % 26;
+        while (indx1 == indx2) {
+            indx2 = rand() % 26;
+        }
+        Temp = codeWord[indx1];
+        codeWord[indx1] = codeWord[indx2];
+        codeWord[indx2] = Temp;
+
+    }
+    return codeWord;
+}
+
+//function to encode a character using
+char encodeChar (char in_char, string codeWord, int rCount){
+    //char new_char;
+    int index;
+    if (!isalpha (in_char)) return in_char;
+
+    //convert in_char to upper case if necessary
+    bool lower_flag = false;
+    if (islower(in_char)) {
+        in_char = toupper(in_char);
+        lower_flag = true;
+    }
+    index = in_char - 'A';
+    index = (index + rCount) % 26;
+    in_char = codeWord.at(index);
+
+    //convert the upper case to lower case if necessary
+    if (lower_flag)
+        in_char = tolower(in_char);
+    return in_char;
+}
+
+int main(){
+    int Text;
+    string smallFile = "C:\\Users\\Gabe\\Desktop\\Intro_to_ECE\\Lab_8_Caesar\\small-file.txt";
+    string largeFile = "C:\\Users\\Gabe\\Desktop\\Intro_to_ECE\\Lab_8_Caesar\\large-file.txt";
+    string out_file = "C:\\Users\\Gabe\\Desktop\\Intro_to_ECE\\Lab_8_Caesar\\out-file.txt";
+
+    //testing for function codeWordGen
+    cout << codeWordGen("IlikeCplusplus") << endl;
+    cout << "Which text do you want to read? \n 1. for short \n 2. for long \n";
+    cin >> Text;
+    if (Text == 1)
+       cout << encrypt(smallFile, out_file, "toobusy") << endl;
+    else
+       cout << encrypt(largeFile, out_file, "toobusy") << endl;
+
+    //testing for function encodeChar()
+    //test1
+    char test_char = 'k';
+    string test_str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    int testCount = 4;
+    cout << "This is a test for encodeChar(): expect = o : result = " << encodeChar(test_char, test_str,testCount) << endl;
+    //test2
+    char test_char1 = 'p';
+    string test_str1 = "ZYXWVUTSRQPONMLKJIHGFEDCBA";
+    int testCount1 = 5;
+    cout << "This is a test for encodeChar(): expect = f : result = " << encodeChar(test_char1, test_str1, testCount1) << endl;
+    //testing for function caesarString()
+    //FIXME needs added
+    //testing for function encrypt()
+    //FIXME needs added
+}
