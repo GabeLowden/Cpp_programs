@@ -1,3 +1,4 @@
+//encryption using enhanced caesar cipher encoding method 
 #include <iostream>
 #include <string>
 #include <cctype>
@@ -60,6 +61,7 @@ string caesarString (string caesar_string, string cipher_key){
     return caesar_string;
 }
 
+//reads strings in from in_file, uses cipher_key to create a code word to use to encrypt the strings then writes them into out_file
 int encrypt (string in_file, string out_file, string cipher_key){
     ifstream inputFile;
     ofstream outputFile;
@@ -95,6 +97,7 @@ int encrypt (string in_file, string out_file, string cipher_key){
     return lines;
 }
 
+//creates a new encrypted code word with cipher_key
 string codeWordGen (string cipher_key) {
     int sum = 0;
     int numShifts;
