@@ -1,0 +1,119 @@
+//
+#include <iostream>
+#include <vector>
+#include <ctime>
+#include <cmath>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <iomanip>
+
+using namespace std;
+//structure for student
+struct Student{
+    string firstName, lastName;
+    vector <double> scores;
+    double average;
+};
+//function references
+Student input_data(string lineString, istringstream & inSS);
+vector <Student> populateStu (string in_file);
+void studentAve(vector <Student> & record);
+vector <double> courseAve(vector <Student> & record);
+string displayStudents_outSS (vector <Student> record, ostringstream & outSS);
+
+//takes integers from the buffer and addeds them to a Student reference
+Student input_data(string lineString, istringstream & inSS){
+    inSS.clear();
+    inSS.str(lineString);
+    Student temp;
+    int one_score;
+    inSS >> temp.firstName >> temp.lastName;
+
+    while (inSS >> one_score){
+
+        temp.scores.push_back(one_score);
+    }
+
+    return temp;
+}
+//while in_file is able to be open each line is added to a vector to represent different students
+vector <Student> populateStu (string in_file){
+    ifstream inputFile;
+    string lineString;
+    istringstream inSS;
+    vector <Student> allStudents;
+
+    inputFile.open(in_file.c_str());
+
+    if (!inputFile) {
+        cout << "input file cannot be opened \n";
+        return {};
+    }
+
+    while (getline(inputFile, lineString)){
+        allStudents.push_back(input_data(lineString, inSS));
+    }
+
+    inputFile.close();
+
+    return allStudents;
+}
+//averages all the grades inside a vector containing a Student structure
+void studentAve(vector <Student> & record){
+    int lenStud = record.size();
+    for (int i = 0; i < lenStud; ++i){
+        double lenScore = record[i].scores.size();
+        int sumScores = 0;
+        for (int j = 0; j < lenScore; ++j){
+            sumScores = sumScores + record[i].scores[j];
+        }
+        record[i].average = sumScores / lenScore;
+    }
+}
+//averages the class grades for each class from every student
+vector <double> courseAve(vector <Student> & record){
+   int lenStud = record.size();
+   vector <double> AvgClasses;
+   double ClassAvg;
+
+   if (lenStud == 1){
+      for (unsigned int i = 0; i < record[i].scores.size(); ++i){
+         AvgClasses.push_back(record[0].scores[i]);
+        }
+    }
+   else {
+       //outer loops go throughs each score that is associated with each class
+      for (unsigned int k = 0; k < record.size(); k++){
+         ClassAvg = 0;
+         //inner loops goes through each student
+         for (unsigned int j = 0; j < record.size(); ++j){
+            ClassAvg = ClassAvg + record[j].scores[k];
+         }
+         AvgClasses.push_back(ClassAvg / lenStud);
+         }
+      }
+   return AvgClasses;
+}
+//outputs the data inside record
+string displayStudents_outSS (vector <Student> record, ostringstream & outSS){
+    outSS << fixed << setprecision (2);
+    for (unsigned int i = 0; i < record.size(); i++){
+        outSS << record[i].firstName << ' ' << record[i].lastName << ' ';
+        for (unsigned int j = 0; j < record[i].scores.size(); j++){
+            outSS << record[i].scores[j] << ' ';}
+        outSS << record[i].average << '\n';
+    }
+    return outSS.str();
+}
+
+int main()
+{
+    istringstream inSS;
+    Student stu1;
+    string largeFile = "C:\\Users\\Gabe\\Desktop\\Intro_to_ECE\\Lab_9\\students-large.txt";
+    string lineString = "Erin Marshall 76 87 56 98 71 66 ";
+    stu1 = input_data(lineString, inSS);
+    cout << stu1.firstName << " " << stu1.scores[0] << stu1.scores[1] << endl;
+    return 0;
+}
